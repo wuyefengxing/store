@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.situ.store.order.mapper.CarMapper">
+
+	<!-- Result Map -->
+	<resultMap id="BaseResultMap" type="com.situ.store.order.model.CarModel">
+		<result column="id" property="id" />
+		<result column="user_code" property="userCode" />
+		<result column="product_code" property="productCode" />
+		<result column="number" property="number" />
+	</resultMap>
+
+	<!-- table all fields   sql片段 -->
+<sql id="Select_Column_List">
+		car.id, user_code, product_code, car.number, name, price
+	</sql>
+	
+	<sql id="Example_Where_Clause">
+		where 1=1
+			<if test="id != null">
+				and car.id = #{id}
+			</if>
+			<if test="userCode != null and userCode != ''">
+				and user_code = #{userCode}
+			</if>
+			<if test="productCode != null and productCode != ''">
+				and product_code = #{productCode}
+			</if>
+			<if test="number != null and number != ''">
+				and number = #{number}
+			</if>
+	</sql>
+	
+	<!-- 查询条件 -->
+	<sql id="Select_Where_Clause">
+		where 1=1
+			<if test="id != null">
+				and car.id = #{id}
+			</if>
+			<if test="userCode != null and userCode != ''">
+				and user_code = #{userCode}
+			</if>
+			<if test="productCode != null and productCode != ''">
+				and product_code = #{productCode}
+			</if>
+			<if test="number != null and number != ''">
+				and number = #{number}
+			</if>
+	</sql>
+
+	<!-- 插入记录 -->
+	<!--selectKey  会将 SELECT LAST_INSERT_ID()的结果放入到传入的model的主键里面，  
+        keyProperty 对应的model中的主键的属性名，这里是 user 中的id，因为它跟数据库的主键对应  
+        order AFTER 表示 SELECT LAST_INSERT_ID() 在insert执行之后执行,多用与自增主键，  
+              BEFORE 表示 SELECT LAST_INSERT_ID() 在insert执行之前执行，这样的话就拿不到主键了，  
+                    这种适合那种主键不是自增的类型  
+        resultType 主键类型 -->  
+<!-- 		<selectKey resultType="java.lang.Integer"  -->
+<!-- 		order="AFTER" keyProperty="id"> -->
+<!-- 			SELECT LAST_INSERT_ID() -->
+<!-- 		</selectKey> -->
+	<insert id="insert" parameterType="Object">
+		insert into store.car(user_code, product_code, number)
+		values(#{userCode}, #{productCode}, #{number})
+	</insert>
+	
+	<!--根据条件删除-->
+	<delete id="delete" parameterType="Object">
+		delete from store.car
+		<include refid="Example_Where_Clause" />
+	</delete>
+
+	<!-- 修改，只修改只不为空的字段-->
+	<update id="update" parameterType="Object">
+		update store.car set
+		<trim suffixOverrides=",">
+			<if test="number != null and number != '' ">
+				number = #{number},
+			</if>
+		</trim>
+		where user_code = #{userCode} and product_code = #{productCode}
+	</update>
+
+	
+	
+	<!-- 根据条件查询购物车列表 -->
+	<select id="selectAll" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Select_Column_List" />
+		from store.car left join store.product on car.product_code=product.code
+		<include refid="Select_Where_Clause" />
+<!-- 		<if test="pager.orderCondition != null and pager.orderCondition != ''"> -->
+<!-- 			${pager.orderCondition} -->
+<!-- 		</if> -->
+	</select>
+</mapper>   

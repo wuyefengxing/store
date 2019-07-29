@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.situ.store.product.mapper.CategoryMapper">
+
+	<!-- Result Map -->
+	<resultMap id="BaseResultMap" type="com.situ.store.product.model.CategoryModel">
+		<result column="id" property="id" />
+		<result column="code" property="code" />
+		<result column="name" property="name" />
+		<result column="des" property="des" />
+		<result column="parent_code" property="parentCode" />
+	</resultMap>
+
+	<!-- table all fields   sql片段 -->
+	<sql id="Base_Column_List">
+		id, code, name, des, parent_code
+	</sql>
+
+	
+	<sql id="Example_Where_Clause">
+		where 1=1
+			<if test="id != null">
+				and id = #{id}
+			</if>
+			<if test="code != null and code != ''">
+				and code = #{code}
+			</if>
+			<if test="name != null and name != ''">
+				and name = #{name}
+			</if>
+			<if test="des != null and des != ''">
+				and des = #{des}
+			</if>
+			<if test="parentCode != null and parentCode != ''">
+				and parent_code = #{parentCode}
+			</if>
+	</sql>
+	
+	<!-- 查询条件 -->
+	<sql id="Select_Where_Clause">
+		where 1=1
+			<if test="id != null">
+				and id = #{id}
+			</if>
+			<if test="code != null and code != ''">
+				and code like #{code}
+			</if>
+			<if test="name != null and name != ''">
+				and name like #{name}
+			</if>
+			<if test="des != null and des != ''">
+				and des = #{des}
+			</if>
+			<if test="parentCode != null and parentCode != ''">
+				and parent_code = #{parentCode}
+			</if>
+	</sql>
+
+	<!-- 插入记录 -->
+	<!--selectKey  会将 SELECT LAST_INSERT_ID()的结果放入到传入的model的主键里面，  
+        keyProperty 对应的model中的主键的属性名，这里是 user 中的id，因为它跟数据库的主键对应  
+        order AFTER 表示 SELECT LAST_INSERT_ID() 在insert执行之后执行,多用与自增主键，  
+              BEFORE 表示 SELECT LAST_INSERT_ID() 在insert执行之前执行，这样的话就拿不到主键了，  
+                    这种适合那种主键不是自增的类型  
+        resultType 主键类型 -->  
+<!-- 		<selectKey resultType="java.lang.Integer"  -->
+<!-- 		order="AFTER" keyProperty="id"> -->
+<!-- 			SELECT LAST_INSERT_ID() -->
+<!-- 		</selectKey> -->
+	<insert id="insert" parameterType="Object">
+		insert into store.category(code, name, des, parent_code)
+		values(#{code}, #{name}, #{des}, #{parentCode})
+	</insert>
+	<!--根据编号删除-->
+	<delete id="delete" parameterType="Object">
+		delete from store.category where code = #{code}
+	</delete>
+	
+	<!--根据条件删除-->
+	<delete id="deleteModel" parameterType="Object">
+		delete from store.category
+		<include refid="Example_Where_Clause" />
+	</delete>
+
+	<!-- 根据编号修改商品分类信息-->
+	<update id="update" parameterType="Object">
+		update store.category set
+		name = #{name},
+		des = #{des}
+		where parent_code = #{parentCode}
+	</update>
+
+	
+	
+	<!-- 根据条件查询商品分类列表 -->
+	<select id="selectAll" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List" />
+		from store.category
+		<include refid="Select_Where_Clause" />
+		<if test="pageOn == true">
+		  limit #{rowStart}, #{pageLimit}
+			</if>
+<!-- 		<if test="pager.orderCondition != null and pager.orderCondition != ''"> -->
+<!-- 			${pager.orderCondition} -->
+<!-- 		</if> -->
+	</select>
+	
+	<!-- 根据编号查询商品分类-->
+	<select id="select" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List" />
+		from store.category where code=#{code}
+	</select>
+	
+	<!-- 列表总数 -->
+	<select id="selectCount" resultType="java.lang.Integer"
+	parameterType="Object">
+		select count(1) from store.category
+		<include refid="Select_Where_Clause" />
+	</select>
+</mapper>   
